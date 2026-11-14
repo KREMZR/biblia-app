@@ -1,0 +1,13 @@
+{
+  "name": "biblia-rv1909",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Biblia Reina-Valera 1909 con letra grande, lectura en voz alta y búsqueda por voz. PWA sin paso de compilación.",
+  "scripts": {
+    "test": "node --test tests/parser.test.js",
+    "serve": "python3 -m http.server 8765",
+    "test:browser": "python3 tests/browser/qa.py",
+    "build:data": "node tools/build-data.js"
+  },
+  "license": "MIT"
+}
