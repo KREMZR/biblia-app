@@ -134,9 +134,10 @@ def run():
             pg.click('[data-action="voice-start"]'); pg.wait_for_timeout(150)
             check(pg, f'{name}/voice-listening', layout_results)
             if name in ('375', '320'): pg.screenshot(path=f'{OUT}{name}-voice-listening.png')
-            pg.evaluate("window.__emit(['juan tres dieciséis'])"); pg.wait_for_timeout(150)
-            check(pg, f'{name}/voice-result', layout_results)
-            if name in ('375', '375-40px', '320'): pg.screenshot(path=f'{OUT}{name}-voice-result.png')
+            # A recognised verse opens directly, so measure the "not found" panel instead.
+            pg.evaluate("window.__emit(['juan veintidós'])"); pg.wait_for_timeout(150)
+            check(pg, f'{name}/voice-notfound', layout_results)
+            if name in ('375', '375-40px', '320'): pg.screenshot(path=f'{OUT}{name}-voice-notfound.png')
             pg.click('[data-action="voice-close"]'); pg.wait_for_timeout(100)
             pg.goto(BASE + '#/marcadores'); pg.wait_for_timeout(300)
             pg.click('.btn-delete >> nth=0'); pg.wait_for_timeout(150)
@@ -189,11 +190,10 @@ def run():
         ok(pg.evaluate("document.activeElement.textContent.trim()") == 'Cancelar', 'focus is on Cancelar while listening')
         pg.evaluate("window.__emit(['juan tres die'], false)"); pg.wait_for_timeout(80)
         ok('juan tres die' in pg.inner_text('#voice-heard'), 'interim words are shown while listening')
-        pg.evaluate("window.__emit(['juan tres dieciséis', 'juan 3 16'])"); pg.wait_for_timeout(150)
-        ok(pg.is_visible('h2:has-text("Buscando: Juan 3:16")'), 'shows "Buscando: Juan 3:16"')
-        ok(pg.is_visible('[data-action="voice-go"]:has-text("Ir")') and pg.is_visible('text=Intentar de nuevo'), 'Ir and Intentar de nuevo buttons shown')
-        pg.click('[data-action="voice-go"]'); pg.wait_for_timeout(600)
-        ok('#/leer/juan/3/16' in pg.url, 'Ir jumps to Juan 3:16')
+        pg.evaluate("window.__emit(['juan tres dieciséis', 'juan 3 16'])"); pg.wait_for_timeout(600)
+        ok('#/leer/juan/3/16' in pg.url, 'recognised verse opens Juan 3:16 directly (no confirmation)')
+        ok(not pg.evaluate("document.getElementById('voice-panel').open"), 'voice panel closes on its own after a recognised verse')
+        ok(not pg.is_visible('[data-action="voice-go"]'), 'no "Ir" confirmation button is shown')
         ok(pg.locator('.verse.is-found').count() == 1 and pg.get_attribute('.verse.is-found', 'data-v') == '16', 'verse 16 highlighted')
         top = pg.evaluate("document.querySelector('#v16').getBoundingClientRect().top")
         ok(0 <= top < 200, f'found verse scrolled into view (top={round(top)})')
@@ -213,9 +213,8 @@ def run():
         # Range by voice
         pg.click('#btn-hablar'); pg.wait_for_timeout(120)
         ok(pg.is_visible('text=Escuchando…'), 'second use goes straight to listening (no explanation again)')
-        pg.evaluate("window.__emit(['Mateo cinco del uno al doce'])"); pg.wait_for_timeout(120)
-        ok(pg.is_visible('h2:has-text("Buscando: Mateo 5:1-12")'), 'range: Mateo 5:1-12')
-        pg.click('[data-action="voice-go"]'); pg.wait_for_timeout(600)
+        pg.evaluate("window.__emit(['Mateo cinco del uno al doce'])"); pg.wait_for_timeout(600)
+        ok('#/leer/mateo/5/1-12' in pg.url, 'range: opens Mateo 5:1-12 directly')
         ok(pg.locator('.verse.is-found').count() == 12, '12 verses highlighted')
 
         # Not understood
@@ -334,6 +333,8 @@ def run():
         pg.fill('#q', 'Salmo 23'); pg.keyboard.press('Enter'); pg.wait_for_timeout(100)
         ok(pg.is_visible('text=Buscando: Salmos 23'), 'Enter key submits typed search')
         pg.screenshot(path=f'{OUT}nosr-buscar.png')
+        pg.reload(); pg.wait_for_timeout(500)
+        ok(pg.url.endswith('#/libros') and pg.is_visible('h1:has-text("Libros")'), 'reopening the app on the search screen opens Libros instead')
         ctx.close()
 
         # ---------- Offline (service worker) ----------

@@ -839,12 +839,6 @@
           '<button class="btn btn-primary" type="button" data-action="voice-cancel">Cancelar</button>';
         focusSel = '[data-action="voice-cancel"]';
         break;
-      case 'result':
-        var res = data.res;
-        h = '<h2 id="voice-title" tabindex="-1" aria-label="Buscando: ' + esc(res.spoken) + '">Buscando: ' + esc(res.label) + '</h2>' + heard +
-          '<button class="btn btn-primary" type="button" data-action="voice-go" data-href="' + esc(refHash(res)) + '" aria-label="Ir a ' + esc(res.spoken) + '">Ir</button>' +
-          '<button class="btn" type="button" data-action="voice-retry">Intentar de nuevo</button>' + close;
-        break;
       case 'notfound':
         var f = failureText(data.res, 'decir');
         h = '<h2 id="voice-title" tabindex="-1">' + esc(f.title) + '</h2>' +
@@ -963,7 +957,12 @@
     if (!alts.length || !alts[0].trim()) { renderVoice('nospeech', {}); return; }
     var res = Parser.parseBest(alts, { verseCounts: meta.verseCounts });
     var heard = res.heard || alts[0];
-    if (res.ok) renderVoice('result', { res: res, heard: heard });
+    if (res.ok) {
+      // Go straight to the passage: no confirmation step. The reading screen
+      // highlights the verse and moves focus to it (screen readers read it).
+      closeVoice(false);
+      go(refHash(res));
+    }
     else renderVoice('notfound', { res: res, heard: heard });
   }
 
@@ -1212,7 +1211,11 @@
     syncBarHeight();
     loadMeta().then(function () {
       var h = location.hash;
-      if (!h || h === '#' || h === '#/') {
+      if (h === '#/buscar') {
+        // Never open the app on the voice/typed search screen (e.g. a restored
+        // tab or a home-screen icon saved there): start on Libros instead.
+        history.replaceState(null, '', '#/libros');
+      } else if (!h || h === '#' || h === '#/') {
         // "Resume where I left off": open the last chapter read.
         var last = store.get('ultimo', null);
         if (last && Books.get(last.book)) {

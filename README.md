@@ -12,7 +12,7 @@ Aplicación web para leer y escuchar la Biblia, pensada para personas mayores y 
 - **Leer**: un capítulo por página, con letra grande. Abajo están los botones **Anterior** y **Siguiente**.
 - **Continuar leyendo**: cuando vuelve a abrir la aplicación, aparece el último capítulo que leyó, en el mismo lugar.
 - **Escuchar**: toque **Escuchar** y la aplicación lee el capítulo en voz alta. Toque **Pausar** para detenerla y **Continuar** para seguir.
-- **Hablar**: toque **Hablar** y diga una cita, por ejemplo «Juan 3:16». La aplicación le muestra lo que entendió y, si toca **Ir**, lo lleva allí y marca el versículo en amarillo.
+- **Hablar**: toque **Hablar** y diga una cita, por ejemplo «Juan 3:16». La aplicación lo lleva allí directamente y marca el versículo en amarillo.
 - **Marcadores**: toque **Guardar** para guardar un capítulo. Los encuentra en **Marcadores**.
 - **Ajustes**: cambie el tamaño de la letra (**A−** y **A+**), los colores (**Claro**, **Modo oscuro**, **Alto contraste**), el tipo de letra y la velocidad de la voz. Los cambios se ven al momento y se guardan.
 
@@ -154,7 +154,7 @@ Use only texts you have the right to distribute (public domain or properly licen
 Automated tests ran in Chromium with mocked speech APIs. Real speech recognition and real voices need a real device. Please check:
 
 **iPhone, Safari (iOS 17+), served over HTTPS**
-- [ ] Hablar → explanation → "Usar el micrófono" → iOS permission prompt → say "Juan tres dieciséis" → "Buscando: Juan 3:16" → Ir → verse highlighted.
+- [ ] Hablar → explanation → "Usar el micrófono" → iOS permission prompt → say "Juan tres dieciséis" → opens Juan 3:16 directly (no confirmation) → verse highlighted.
 - [ ] Say "Primera de Corintios trece" and "Mateo cinco del uno al doce".
 - [ ] Deny the microphone → the text box appears with an explanation.
 - [ ] Turn off Siri & Dictation → Hablar shows the text box instead of an error.

@@ -7,6 +7,6 @@
 (function (root) {
   root.BIBLIA_CONFIG = {
     translation: 'rv1909',
-    version: '1.0.0'
+    version: '1.0.2'
   };
 })(typeof self !== 'undefined' ? self : this);
