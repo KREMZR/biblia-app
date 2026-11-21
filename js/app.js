@@ -229,7 +229,7 @@
     var items = '';
     for (var c = 1; c <= n; c++) {
       var isLast = last && last.book === id && last.chapter === c;
-      items += '<li><a class="btn' + (isLast ? ' btn-current' : '') + '" href="' + readHash(id, c) + '"' +
+      items += '<li><a class="btn' + (isLast ? ' btn-current' : '') + '" href="#/versiculos/' + id + '/' + c + '"' +
         ' aria-label="Capítulo ' + c + (isLast ? ', aquí se quedó' : '') + '">' + c + '</a></li>';
     }
     var html = '<h1>' + esc(b.name) + '</h1>' +
@@ -239,6 +239,29 @@
     show({
       title: b.name, nav: 'libros', html: html,
       back: { href: '#/libros/' + t, label: 'Volver a ' + (t === 'at' ? 'Antiguo' : 'Nuevo') + ' Testamento' }
+    });
+  }
+
+  /** Verse picker, shown after choosing a chapter. Verse 1 is not needed: "whole chapter" covers it. */
+  function renderVerses(id, ch) {
+    var b = Books.get(id);
+    if (!b) return go('#/libros');
+    var n = chapterCount(id);
+    if (ch < 1 || ch > n) return go('#/libro/' + id);
+    var count = meta && meta.verseCounts[id] ? meta.verseCounts[id][ch - 1] : 0;
+    var items = '';
+    for (var v = 1; v <= count; v++) {
+      items += '<li><a class="btn" href="' + readHash(id, ch) + '/' + v + '" aria-label="Versículo ' + v + '">' + v + '</a></li>';
+    }
+    var title = b.name + ' ' + ch;
+    var html = '<h1>' + esc(title) + '</h1>' +
+      '<div class="stack"><a class="btn btn-primary btn-block btn-tall" href="' + readHash(id, ch) + '">' +
+      '<span class="btn-title">Leer el capítulo completo</span></a></div>' +
+      '<p>O elija un versículo.</p>' +
+      '<ul class="grid grid-chapters">' + items + '</ul>';
+    show({
+      title: title, nav: 'libros', html: html,
+      back: { href: '#/libro/' + id, label: 'Volver a los capítulos de ' + b.name }
     });
   }
 
@@ -1171,6 +1194,7 @@
     [/^#\/libros$/, function () { renderLibros(); }],
     [/^#\/libros\/(at|nt)$/, function (m) { renderTestament(m[1]); }],
     [/^#\/libro\/([a-z0-9-]+)$/, function (m) { renderChapters(m[1]); }],
+    [/^#\/versiculos\/([a-z0-9-]+)\/(\d+)$/, function (m) { renderVerses(m[1], +m[2]); }],
     [/^#\/leer\/([a-z0-9-]+)\/(\d+)(?:\/(\d+)(?:-(\d+))?)?$/, function (m) {
       renderReader(m[1], +m[2], m[3] ? +m[3] : null, m[4] ? +m[4] : null);
     }],

@@ -98,7 +98,7 @@ def check(pg, label, layout_results):
 
 SCREENS = [
   ('libros', '#/libros'), ('at', '#/libros/at'), ('nt', '#/libros/nt'), ('salmos', '#/libro/salmos'),
-  ('juan3', '#/leer/juan/3'), ('found', '#/leer/juan/3/16-18'), ('marcadores', '#/marcadores'),
+  ('versiculos', '#/versiculos/juan/3'), ('juan3', '#/leer/juan/3'), ('found', '#/leer/juan/3/16-18'), ('marcadores', '#/marcadores'),
   ('ajustes', '#/ajustes'), ('acerca', '#/acerca'), ('buscar', '#/buscar'),
 ]
 
